@@ -8,25 +8,25 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-This n8n community node provides seamless integration with Ondo Finance's decentralized finance platform, offering 6 comprehensive resources for managing tokenized financial products, institutional-grade DeFi operations, and yield-generating assets including USDY tokens, OUSG fund management, and Flux Finance lending protocols.
+An n8n community node for integrating with Ondo Finance's institutional-grade DeFi protocols. This node provides access to 5 core resources including USDY and OUSG token operations, global markets data, Flux Finance lending protocols, and portfolio management capabilities for tokenized real-world assets and yield-bearing digital securities.
 
 ![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
-![DeFi](https://img.shields.io/badge/DeFi-Ondo%20Finance-green)
-![Tokenization](https://img.shields.io/badge/Tokenization-RWA-orange)
-![Institutional](https://img.shields.io/badge/Grade-Institutional-purple)
+![DeFi](https://img.shields.io/badge/DeFi-Institutional-green)
+![RWA](https://img.shields.io/badge/RWA-Tokenization-purple)
+![Yield](https://img.shields.io/badge/Yield-Bearing-orange)
 
 ## Features
 
-- **USDY Token Operations** - Manage US Dollar Yield tokens, transfers, and yield tracking
-- **OUSG Fund Management** - Handle Ondo Short-Term US Government Bond fund operations
-- **Global Markets Integration** - Access institutional-grade trading and market data
-- **Token Pricing & NAV** - Real-time pricing data and net asset value calculations
-- **Redemptions & Subscriptions** - Automate fund entry and exit processes
-- **Flux Finance Lending** - Manage lending protocols and yield farming strategies
-- **Institutional-Grade Security** - Enterprise-level authentication and compliance
-- **Real-Time Analytics** - Monitor performance metrics and portfolio health
+- **USDY Token Management** - Access and manage US Dollar Yield token operations including transfers, minting, and redemptions
+- **OUSG Token Operations** - Interact with Ondo US Short-term Government Bond token for institutional treasury management
+- **Global Markets Integration** - Retrieve real-time market data, pricing, and liquidity information across Ondo's protocols
+- **Flux Finance Protocol** - Execute lending and borrowing operations through Ondo's institutional lending platform
+- **Portfolio Analytics** - Monitor and analyze tokenized asset portfolios with comprehensive performance metrics
+- **Institutional-Grade Security** - Built-in compliance features for institutional DeFi requirements
+- **Multi-Chain Support** - Support for Ethereum mainnet and other supported blockchain networks
+- **Real-World Asset Exposure** - Access tokenized government bonds, treasury bills, and other RWA products
 
 ## Installation
 
@@ -61,115 +61,121 @@ n8n start
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| API Key | Your Ondo Finance API key for authentication | ✅ |
-| Environment | Production or Sandbox environment | ✅ |
-| Wallet Address | Your institutional wallet address | ✅ |
-| Network | Ethereum mainnet or supported testnets | ✅ |
+| API Key | Your Ondo Finance API key for authenticated requests | Yes |
+| Environment | Select production or sandbox environment | Yes |
+| Wallet Address | Ethereum wallet address for transaction signing | Yes |
 
 ## Resources & Operations
 
-### 1. USDY Token Operations
+### 1. USDY Token
 
 | Operation | Description |
 |-----------|-------------|
 | Get Balance | Retrieve USDY token balance for specified address |
-| Transfer Tokens | Execute USDY token transfers between addresses |
-| Get Yield History | Fetch historical yield data and performance metrics |
-| Check Allowances | View token allowances and spending permissions |
-| Get Transaction History | Retrieve complete transaction history for USDY tokens |
+| Transfer | Execute USDY token transfers between addresses |
+| Mint | Mint new USDY tokens (authorized users only) |
+| Redeem | Redeem USDY tokens for underlying assets |
+| Get Yield Rate | Fetch current USDY yield rate and APY |
+| Transaction History | Retrieve transaction history for USDY operations |
 
-### 2. OUSG Fund Management
-
-| Operation | Description |
-|-----------|-------------|
-| Get Fund Details | Retrieve detailed information about OUSG fund |
-| Calculate Holdings | Calculate current holdings and portfolio value |
-| Get Performance Metrics | Access fund performance and benchmark data |
-| Update Allocations | Modify fund allocation percentages |
-| Generate Reports | Create comprehensive fund performance reports |
-
-### 3. Ondo Global Markets
+### 2. OUSG Token
 
 | Operation | Description |
 |-----------|-------------|
-| Get Market Data | Access real-time market data and pricing |
-| Place Orders | Execute buy/sell orders on global markets |
-| Get Order History | Retrieve order history and execution details |
-| Monitor Positions | Track current positions and P&L |
-| Get Market Analytics | Access advanced market analytics and insights |
+| Get Balance | Check OUSG token balance for wallet address |
+| Transfer | Transfer OUSG tokens between institutional accounts |
+| Mint | Mint new OUSG tokens (institutional access) |
+| Redeem | Redeem OUSG tokens for US government securities |
+| Get NAV | Retrieve current net asset value per OUSG token |
+| Yield History | Access historical yield data and distributions |
 
-### 4. Token Pricing and NAV
-
-| Operation | Description |
-|-----------|-------------|
-| Get Token Prices | Retrieve current token prices across all assets |
-| Calculate NAV | Calculate net asset value for tokenized funds |
-| Get Price History | Access historical pricing data and trends |
-| Set Price Alerts | Configure price movement notifications |
-| Get Yield Rates | Fetch current and historical yield rates |
-
-### 5. Redemptions and Subscriptions
+### 3. Global Markets
 
 | Operation | Description |
 |-----------|-------------|
-| Submit Subscription | Process new fund subscription requests |
-| Request Redemption | Initiate fund redemption procedures |
-| Get Subscription Status | Check status of pending subscriptions |
-| Get Redemption Status | Monitor redemption request progress |
-| Calculate Fees | Calculate subscription and redemption fees |
+| Get Market Data | Fetch real-time pricing and market information |
+| List Instruments | Retrieve available tokenized instruments and products |
+| Get Liquidity | Check liquidity pools and available trading pairs |
+| Market Statistics | Access trading volume and market depth data |
+| Price History | Retrieve historical price data for analysis |
+| Rate Information | Get current interest rates and yield curves |
 
-### 6. Flux Finance Lending
+### 4. Flux Finance
 
 | Operation | Description |
 |-----------|-------------|
-| Supply Assets | Supply assets to lending pools for yield |
-| Borrow Assets | Borrow assets against supplied collateral |
-| Get Lending Rates | Retrieve current lending and borrowing rates |
-| Monitor Health Factor | Track loan health and liquidation risk |
-| Claim Rewards | Claim accumulated lending rewards |
+| Get Lending Pools | List available lending pools and rates |
+| Supply Assets | Supply assets to lending pools for yield generation |
+| Borrow Assets | Borrow against supplied collateral |
+| Repay Loan | Repay outstanding loan positions |
+| Get Position | Retrieve current lending/borrowing positions |
+| Calculate Interest | Calculate accrued interest and fees |
+
+### 5. Portfolio
+
+| Operation | Description |
+|-----------|-------------|
+| Get Portfolio | Retrieve complete portfolio overview and allocation |
+| Asset Breakdown | Get detailed breakdown by asset type and yield |
+| Performance Metrics | Access portfolio performance and risk analytics |
+| Rebalance | Execute portfolio rebalancing operations |
+| Risk Assessment | Generate risk reports and compliance metrics |
+| Export Data | Export portfolio data for external analysis |
 
 ## Usage Examples
 
 ```javascript
 // Get USDY token balance
-const balance = await ondoFinance.usdyTokenOperations.getBalance({
-  address: "0x742d35Cc6634C0532925a3b8D4DdaC7c0b9d7fd8",
-  token: "USDY"
-});
+{
+  "resource": "usdyToken",
+  "operation": "getBalance",
+  "address": "0x742d35Cc6634C0532925a3b8D94e3d6cF6B7bC13"
+}
+```
 
-// Calculate OUSG fund NAV
-const nav = await ondoFinance.ousgFundManagement.calculateNav({
-  fundId: "OUSG-001",
-  timestamp: "2024-01-15T10:00:00Z"
-});
+```javascript
+// Transfer OUSG tokens
+{
+  "resource": "ousgToken", 
+  "operation": "transfer",
+  "to": "0x742d35Cc6634C0532925a3b8D94e3d6cF6B7bC13",
+  "amount": "1000",
+  "memo": "Quarterly distribution"
+}
+```
 
-// Submit subscription request
-const subscription = await ondoFinance.redemptionsAndSubscriptions.submitSubscription({
-  amount: 50000,
-  currency: "USDC",
-  fundId: "OUSG-001",
-  investorId: "INV-123456"
-});
+```javascript
+// Supply assets to Flux Finance
+{
+  "resource": "fluxFinance",
+  "operation": "supplyAssets",
+  "asset": "USDC",
+  "amount": "50000",
+  "poolId": "flux-usdc-pool-1"
+}
+```
 
-// Supply assets to Flux lending pool
-const lending = await ondoFinance.fluxFinanceLending.supplyAssets({
-  asset: "USDC",
-  amount: 100000,
-  pool: "flux-usdc-pool",
-  duration: "30d"
-});
+```javascript
+// Get portfolio performance metrics
+{
+  "resource": "portfolio",
+  "operation": "performanceMetrics",
+  "timeframe": "30d",
+  "includeYield": true,
+  "currency": "USD"
+}
 ```
 
 ## Error Handling
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| INSUFFICIENT_BALANCE | Token balance too low for operation | Verify wallet balance before transactions |
-| INVALID_API_KEY | Authentication failed | Check API key validity and permissions |
-| NETWORK_ERROR | Blockchain network connection failed | Verify network connectivity and retry |
-| COMPLIANCE_CHECK_FAILED | KYC/AML verification required | Complete institutional verification process |
-| RATE_LIMIT_EXCEEDED | Too many requests in time window | Implement request throttling and retry logic |
-| INVALID_FUND_ID | Fund identifier not found | Verify fund ID exists and is accessible |
+| Invalid API Key | Authentication failed with provided credentials | Verify API key is correct and has proper permissions |
+| Insufficient Balance | Not enough token balance for requested operation | Check balance before executing transfers or redemptions |
+| Rate Limit Exceeded | Too many API requests in short timeframe | Implement request throttling and retry logic |
+| Network Error | Blockchain network connectivity issues | Wait for network stability and retry transaction |
+| Unauthorized Operation | User lacks permission for requested action | Verify account has institutional access for operation |
+| Invalid Address | Ethereum address format is incorrect | Validate address format before API calls |
 
 ## Development
 
@@ -214,5 +220,5 @@ Contributions are welcome! Please ensure:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-ondo-finance/issues)
-- **Ondo Finance Documentation**: [Ondo Finance Docs](https://docs.ondo.finance)
-- **Developer Community**: [Ondo Finance Discord](https://discord.gg/ondofinance)
+- **Ondo Finance Documentation**: [docs.ondo.finance](https://docs.ondo.finance)
+- **DeFi Community**: [Ondo Finance Discord](https://discord.gg/ondofinance)
