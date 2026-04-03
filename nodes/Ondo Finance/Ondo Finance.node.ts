@@ -18,6 +18,7 @@ import {
   INodeTypeDescription,
   NodeOperationError,
   NodeApiError,
+  JsonObject,
 } from 'n8n-workflow';
 
 
@@ -51,31 +52,27 @@ export class OndoFinance implements INodeType {
         noDataExpression: true,
         options: [
           {
-            name: 'UsdyTokenOperations',
-            value: 'usdyTokenOperations',
+            name: 'UsdyToken',
+            value: 'usdyToken',
           },
           {
-            name: 'OusgFundManagement',
-            value: 'ousgFundManagement',
+            name: 'OUSG Token',
+            value: 'outsgToken',
           },
           {
-            name: 'OndoGlobalMarkets',
-            value: 'ondoGlobalMarkets',
+            name: 'Global Markets',
+            value: 'globalMarkets',
           },
           {
-            name: 'TokenPricingAndNav',
-            value: 'tokenPricingAndNav',
+            name: 'Flux Finance',
+            value: 'fluxFinance',
           },
           {
-            name: 'RedemptionsAndSubscriptions',
-            value: 'redemptionsAndSubscriptions',
-          },
-          {
-            name: 'FluxFinanceLending',
-            value: 'fluxFinanceLending',
+            name: 'Portfolio',
+            value: 'portfolio',
           }
         ],
-        default: 'usdyTokenOperations',
+        default: 'usdyToken',
       },
       // Operation dropdowns per resource
 {
@@ -83,44 +80,17 @@ export class OndoFinance implements INodeType {
   name: 'operation',
   type: 'options',
   noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-    },
-  },
+  displayOptions: { show: { resource: ['usdyToken'] } },
   options: [
-    {
-      name: 'Create',
-      value: 'create',
-      description: 'Create USDY token operations',
-      action: 'Create USDY token operations',
-    },
-    {
-      name: 'Get',
-      value: 'get',
-      description: 'Get USDY token operations',
-      action: 'Get USDY token operations',
-    },
-    {
-      name: 'Get All',
-      value: 'getAll',
-      description: 'List USDY token operations',
-      action: 'List USDY token operations',
-    },
-    {
-      name: 'Update',
-      value: 'update',
-      description: 'Update USDY token operations',
-      action: 'Update USDY token operations',
-    },
-    {
-      name: 'Delete',
-      value: 'delete',
-      description: 'Delete USDY token operations',
-      action: 'Delete USDY token operations',
-    },
+    { name: 'Get Balance', value: 'getBalance', description: 'Get USDY balance for address', action: 'Get balance' },
+    { name: 'Get Total Supply', value: 'getTotalSupply', description: 'Get total USDY supply', action: 'Get total supply' },
+    { name: 'Get Current Yield', value: 'getCurrentYield', description: 'Get current USDY yield rate', action: 'Get current yield' },
+    { name: 'Mint Tokens', value: 'mintTokens', description: 'Mint USDY tokens', action: 'Mint tokens' },
+    { name: 'Redeem Tokens', value: 'redeemTokens', description: 'Redeem USDY tokens', action: 'Redeem tokens' },
+    { name: 'Get Transactions', value: 'getTransactions', description: 'Get USDY transaction history', action: 'Get transactions' },
+    { name: 'Get Price', value: 'getPrice', description: 'Get current USDY price', action: 'Get price' },
   ],
-  default: 'create',
+  default: 'getBalance',
 },
 {
 	displayName: 'Operation',
@@ -129,948 +99,792 @@ export class OndoFinance implements INodeType {
 	noDataExpression: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
+			resource: ['outsgToken'],
 		},
 	},
 	options: [
 		{
-			name: 'Create',
-			value: 'create',
-			description: 'Create OUSG fund management',
-			action: 'Create OUSG fund management',
+			name: 'Get Balance',
+			value: 'getBalance',
+			description: 'Get OUSG balance for address',
+			action: 'Get OUSG balance for address',
 		},
 		{
-			name: 'Get',
-			value: 'get',
-			description: 'Get OUSG fund management by ID',
-			action: 'Get OUSG fund management',
+			name: 'Get Total Supply',
+			value: 'getTotalSupply',
+			description: 'Get total OUSG supply',
+			action: 'Get total OUSG supply',
 		},
 		{
-			name: 'Get All',
-			value: 'getAll',
-			description: 'List all OUSG fund managements',
-			action: 'List OUSG fund managements',
+			name: 'Get Net Asset Value',
+			value: 'getNetAssetValue',
+			description: 'Get current OUSG NAV',
+			action: 'Get current OUSG NAV',
 		},
 		{
-			name: 'Update',
-			value: 'update',
-			description: 'Update OUSG fund management',
-			action: 'Update OUSG fund management',
+			name: 'Transfer Tokens',
+			value: 'transferTokens',
+			description: 'Transfer OUSG tokens',
+			action: 'Transfer OUSG tokens',
 		},
 		{
-			name: 'Delete',
-			value: 'delete',
-			description: 'Delete OUSG fund management',
-			action: 'Delete OUSG fund management',
+			name: 'Get Transactions',
+			value: 'getTransactions',
+			description: 'Get OUSG transaction history',
+			action: 'Get OUSG transaction history',
+		},
+		{
+			name: 'Get Yield History',
+			value: 'getYieldHistory',
+			description: 'Get OUSG yield history',
+			action: 'Get OUSG yield history',
+		},
+		{
+			name: 'Get Price',
+			value: 'getPrice',
+			description: 'Get current OUSG price',
+			action: 'Get current OUSG price',
 		},
 	],
-	default: 'create',
+	default: 'getBalance',
+},
+{
+	displayName: 'Operation',
+	name: 'operation',
+	type: 'options',
+	noDataExpression: true,
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+		},
+	},
+	options: [
+		{
+			name: 'Get All Assets',
+			value: 'getAllAssets',
+			description: 'Get all available global assets',
+			action: 'Get all global assets',
+		},
+		{
+			name: 'Get Asset',
+			value: 'getAsset',
+			description: 'Get specific global asset details',
+			action: 'Get a global asset',
+		},
+		{
+			name: 'Get Market Prices',
+			value: 'getMarketPrices',
+			description: 'Get current market prices',
+			action: 'Get market prices',
+		},
+		{
+			name: 'Get Trading Volume',
+			value: 'getTradingVolume',
+			description: 'Get trading volume data',
+			action: 'Get trading volume',
+		},
+		{
+			name: 'Get Compliance Status',
+			value: 'getComplianceStatus',
+			description: 'Get regulatory compliance status',
+			action: 'Get compliance status',
+		},
+		{
+			name: 'Create Trade',
+			value: 'createTrade',
+			description: 'Execute global market trade',
+			action: 'Create a trade',
+		},
+		{
+			name: 'Get Trade History',
+			value: 'getTradeHistory',
+			description: 'Get trade execution history',
+			action: 'Get trade history',
+		},
+	],
+	default: 'getAllAssets',
 },
 {
   displayName: 'Operation',
   name: 'operation',
   type: 'options',
   noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-    },
-  },
+  displayOptions: { show: { resource: ['fluxFinance'] } },
   options: [
-    {
-      name: 'Create',
-      value: 'create',
-      description: 'Create Ondo Global Markets',
-      action: 'Create Ondo Global Markets',
-    },
-    {
-      name: 'Get',
-      value: 'get',
-      description: 'Get Ondo Global Markets',
-      action: 'Get Ondo Global Markets',
-    },
-    {
-      name: 'Get All',
-      value: 'getAll',
-      description: 'List Ondo Global Markets',
-      action: 'List Ondo Global Markets',
-    },
-    {
-      name: 'Update',
-      value: 'update',
-      description: 'Update Ondo Global Markets',
-      action: 'Update Ondo Global Markets',
-    },
-    {
-      name: 'Delete',
-      value: 'delete',
-      description: 'Delete Ondo Global Markets',
-      action: 'Delete Ondo Global Markets',
-    },
+    { name: 'Get All Markets', value: 'getAllMarkets', description: 'Get all Flux lending markets', action: 'Get all markets' },
+    { name: 'Get Market', value: 'getMarket', description: 'Get specific market details', action: 'Get market details' },
+    { name: 'Get Account Position', value: 'getAccountPosition', description: 'Get user\'s lending/borrowing position', action: 'Get account position' },
+    { name: 'Supply Asset', value: 'supplyAsset', description: 'Supply assets to Flux protocol', action: 'Supply asset' },
+    { name: 'Borrow Asset', value: 'borrowAsset', description: 'Borrow assets from Flux protocol', action: 'Borrow asset' },
+    { name: 'Repay Loan', value: 'repayLoan', description: 'Repay borrowed assets', action: 'Repay loan' },
+    { name: 'Redeem Asset', value: 'redeemAsset', description: 'Redeem supplied assets', action: 'Redeem asset' },
+    { name: 'Get Interest Rates', value: 'getInterestRates', description: 'Get current supply/borrow rates', action: 'Get interest rates' },
   ],
-  default: 'create',
+  default: 'getAllMarkets',
 },
 {
-  displayName: 'Operation',
-  name: 'operation',
-  type: 'options',
-  noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-    },
-  },
-  options: [
-    {
-      name: 'Create Token Pricing and NAV',
-      value: 'create',
-      description: 'Create token pricing and NAV',
-      action: 'Create token pricing and NAV',
-    },
-    {
-      name: 'Get Token Pricing and NAV',
-      value: 'get',
-      description: 'Get token pricing and NAV by ID',
-      action: 'Get token pricing and NAV',
-    },
-    {
-      name: 'List Token Pricing and NAV',
-      value: 'getAll',
-      description: 'List all token pricing and NAV records',
-      action: 'List token pricing and NAV',
-    },
-    {
-      name: 'Update Token Pricing and NAV',
-      value: 'update',
-      description: 'Update token pricing and NAV',
-      action: 'Update token pricing and NAV',
-    },
-    {
-      name: 'Delete Token Pricing and NAV',
-      value: 'delete',
-      description: 'Delete token pricing and NAV',
-      action: 'Delete token pricing and NAV',
-    },
-  ],
-  default: 'create',
-},
-{
-  displayName: 'Operation',
-  name: 'operation',
-  type: 'options',
-  noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-    },
-  },
-  options: [
-    {
-      name: 'Create',
-      value: 'create',
-      description: 'Create redemptions and subscriptions',
-      action: 'Create redemptions and subscriptions',
-    },
-    {
-      name: 'Get',
-      value: 'get',
-      description: 'Get redemptions and subscriptions by ID',
-      action: 'Get redemptions and subscriptions',
-    },
-    {
-      name: 'Get All',
-      value: 'getAll',
-      description: 'List all redemptions and subscriptions',
-      action: 'Get all redemptions and subscriptions',
-    },
-    {
-      name: 'Update',
-      value: 'update',
-      description: 'Update redemptions and subscriptions',
-      action: 'Update redemptions and subscriptions',
-    },
-    {
-      name: 'Delete',
-      value: 'delete',
-      description: 'Delete redemptions and subscriptions',
-      action: 'Delete redemptions and subscriptions',
-    },
-  ],
-  default: 'create',
-},
-{
-  displayName: 'Operation',
-  name: 'operation',
-  type: 'options',
-  noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-    },
-  },
-  options: [
-    {
-      name: 'Create',
-      value: 'create',
-      description: 'Create Flux Finance lending',
-      action: 'Create Flux Finance lending',
-    },
-    {
-      name: 'Get',
-      value: 'get',
-      description: 'Get Flux Finance lending',
-      action: 'Get Flux Finance lending',
-    },
-    {
-      name: 'Get All',
-      value: 'getAll',
-      description: 'List Flux Finance lending',
-      action: 'Get all Flux Finance lending',
-    },
-    {
-      name: 'Update',
-      value: 'update',
-      description: 'Update Flux Finance lending',
-      action: 'Update Flux Finance lending',
-    },
-    {
-      name: 'Delete',
-      value: 'delete',
-      description: 'Delete Flux Finance lending',
-      action: 'Delete Flux Finance lending',
-    },
-  ],
-  default: 'create',
+	displayName: 'Operation',
+	name: 'operation',
+	type: 'options',
+	noDataExpression: true,
+	displayOptions: {
+		show: {
+			resource: ['portfolio'],
+		},
+	},
+	options: [
+		{
+			name: 'Get Portfolio',
+			value: 'getPortfolio',
+			description: 'Get complete portfolio overview',
+			action: 'Get portfolio overview',
+		},
+		{
+			name: 'Get Asset Allocation',
+			value: 'getAssetAllocation',
+			description: 'Get portfolio asset allocation',
+			action: 'Get asset allocation',
+		},
+		{
+			name: 'Get Performance',
+			value: 'getPerformance',
+			description: 'Get portfolio performance metrics',
+			action: 'Get performance metrics',
+		},
+		{
+			name: 'Get Yield Summary',
+			value: 'getYieldSummary',
+			description: 'Get aggregate yield summary',
+			action: 'Get yield summary',
+		},
+		{
+			name: 'Rebalance Portfolio',
+			value: 'rebalancePortfolio',
+			description: 'Rebalance portfolio allocation',
+			action: 'Rebalance portfolio',
+		},
+		{
+			name: 'Get Portfolio History',
+			value: 'getPortfolioHistory',
+			description: 'Get historical portfolio data',
+			action: 'Get portfolio history',
+		},
+		{
+			name: 'Get Risk Metrics',
+			value: 'getRiskMetrics',
+			description: 'Get portfolio risk assessment',
+			action: 'Get risk metrics',
+		},
+	],
+	default: 'getPortfolio',
 },
       // Parameter definitions
 {
-  displayName: 'ID',
-  name: 'id',
+  displayName: 'Address',
+  name: 'address',
   type: 'string',
   required: true,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['get', 'update', 'delete'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['getBalance'] 
+    } 
   },
   default: '',
-  description: 'The ID of the USDY token operation',
-},
-{
-  displayName: 'Token Address',
-  name: 'tokenAddress',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['create'],
-    },
-  },
-  default: '',
-  description: 'The USDY token contract address',
+  placeholder: '0x1234567890abcdef1234567890abcdef12345678',
+  description: 'The wallet address to check USDY balance for',
 },
 {
   displayName: 'Amount',
   name: 'amount',
   type: 'string',
   required: true,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['create'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['mintTokens'] 
+    } 
   },
   default: '',
-  description: 'The amount of USDY tokens',
+  placeholder: '1000',
+  description: 'The amount of USDY tokens to mint',
 },
 {
-  displayName: 'Operation Type',
-  name: 'operationType',
-  type: 'options',
+  displayName: 'Recipient',
+  name: 'recipient',
+  type: 'string',
   required: true,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['create'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['mintTokens'] 
+    } 
   },
-  options: [
-    {
-      name: 'Transfer',
-      value: 'transfer',
-    },
-    {
-      name: 'Mint',
-      value: 'mint',
-    },
-    {
-      name: 'Burn',
-      value: 'burn',
-    },
-    {
-      name: 'Approve',
-      value: 'approve',
-    },
-  ],
-  default: 'transfer',
-  description: 'The type of token operation',
+  default: '',
+  placeholder: '0x1234567890abcdef1234567890abcdef12345678',
+  description: 'The recipient address for minted tokens',
 },
 {
-  displayName: 'Recipient Address',
-  name: 'recipientAddress',
+  displayName: 'Amount',
+  name: 'amount',
+  type: 'string',
+  required: true,
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['redeemTokens'] 
+    } 
+  },
+  default: '',
+  placeholder: '1000',
+  description: 'The amount of USDY tokens to redeem',
+},
+{
+  displayName: 'Address',
+  name: 'address',
+  type: 'string',
+  required: true,
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['redeemTokens'] 
+    } 
+  },
+  default: '',
+  placeholder: '0x1234567890abcdef1234567890abcdef12345678',
+  description: 'The address to redeem tokens from',
+},
+{
+  displayName: 'Address',
+  name: 'address',
   type: 'string',
   required: false,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['create'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['getTransactions'] 
+    } 
   },
   default: '',
-  description: 'The recipient address for the operation',
+  placeholder: '0x1234567890abcdef1234567890abcdef12345678',
+  description: 'Filter transactions by address (optional)',
 },
 {
   displayName: 'Limit',
   name: 'limit',
   type: 'number',
   required: false,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['getAll'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['getTransactions'] 
+    } 
   },
-  default: 100,
-  description: 'Maximum number of results to return',
+  default: 50,
+  description: 'Maximum number of transactions to return',
 },
 {
   displayName: 'Offset',
   name: 'offset',
   type: 'number',
   required: false,
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['getAll'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['usdyToken'],
+      operation: ['getTransactions'] 
+    } 
   },
   default: 0,
-  description: 'Number of results to skip',
+  description: 'Number of transactions to skip',
 },
 {
-  displayName: 'Update Fields',
-  name: 'updateFields',
-  type: 'collection',
-  placeholder: 'Add Field',
-  default: {},
-  displayOptions: {
-    show: {
-      resource: ['usdyTokenOperations'],
-      operation: ['update'],
-    },
-  },
-  options: [
-    {
-      displayName: 'Amount',
-      name: 'amount',
-      type: 'string',
-      default: '',
-      description: 'Updated amount of USDY tokens',
-    },
-    {
-      displayName: 'Status',
-      name: 'status',
-      type: 'options',
-      options: [
-        {
-          name: 'Pending',
-          value: 'pending',
-        },
-        {
-          name: 'Completed',
-          value: 'completed',
-        },
-        {
-          name: 'Failed',
-          value: 'failed',
-        },
-      ],
-      default: 'pending',
-      description: 'Updated status of the operation',
-    },
-    {
-      displayName: 'Recipient Address',
-      name: 'recipientAddress',
-      type: 'string',
-      default: '',
-      description: 'Updated recipient address',
-    },
-  ],
-},
-{
-	displayName: 'Fund Management ID',
-	name: 'id',
+	displayName: 'Address',
+	name: 'address',
 	type: 'string',
 	required: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['get', 'update', 'delete'],
+			resource: ['outsgToken'],
+			operation: ['getBalance'],
 		},
 	},
 	default: '',
-	description: 'The ID of the OUSG fund management',
+	placeholder: '0x1234567890abcdef...',
+	description: 'The wallet address to get OUSG balance for',
 },
 {
-	displayName: 'Fund Name',
-	name: 'fundName',
+	displayName: 'From Address',
+	name: 'from',
 	type: 'string',
 	required: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['create'],
+			resource: ['outsgToken'],
+			operation: ['transferTokens'],
 		},
 	},
 	default: '',
-	description: 'The name of the OUSG fund',
+	placeholder: '0x1234567890abcdef...',
+	description: 'The sender address',
 },
 {
-	displayName: 'Management Strategy',
-	name: 'managementStrategy',
-	type: 'options',
+	displayName: 'To Address',
+	name: 'to',
+	type: 'string',
 	required: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['create', 'update'],
+			resource: ['outsgToken'],
+			operation: ['transferTokens'],
 		},
 	},
-	options: [
-		{
-			name: 'Active',
-			value: 'active',
-		},
-		{
-			name: 'Passive',
-			value: 'passive',
-		},
-		{
-			name: 'Hybrid',
-			value: 'hybrid',
-		},
-	],
-	default: 'active',
-	description: 'The management strategy for the fund',
+	default: '',
+	placeholder: '0x1234567890abcdef...',
+	description: 'The recipient address',
 },
 {
-	displayName: 'Target Allocation (%)',
-	name: 'targetAllocation',
-	type: 'number',
-	required: false,
+	displayName: 'Amount',
+	name: 'amount',
+	type: 'string',
+	required: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['create', 'update'],
+			resource: ['outsgToken'],
+			operation: ['transferTokens'],
 		},
 	},
-	default: 100,
-	description: 'The target allocation percentage for the fund',
+	default: '',
+	placeholder: '1000.00',
+	description: 'The amount of OUSG tokens to transfer',
 },
 {
-	displayName: 'Risk Profile',
-	name: 'riskProfile',
-	type: 'options',
-	required: false,
+	displayName: 'Address',
+	name: 'address',
+	type: 'string',
+	required: true,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['create', 'update'],
+			resource: ['outsgToken'],
+			operation: ['getTransactions'],
 		},
 	},
-	options: [
-		{
-			name: 'Conservative',
-			value: 'conservative',
-		},
-		{
-			name: 'Moderate',
-			value: 'moderate',
-		},
-		{
-			name: 'Aggressive',
-			value: 'aggressive',
-		},
-	],
-	default: 'moderate',
-	description: 'The risk profile of the fund',
+	default: '',
+	placeholder: '0x1234567890abcdef...',
+	description: 'The wallet address to get transaction history for',
 },
 {
 	displayName: 'Limit',
 	name: 'limit',
 	type: 'number',
-	required: false,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['getAll'],
+			resource: ['outsgToken'],
+			operation: ['getTransactions'],
 		},
 	},
-	default: 50,
-	description: 'Maximum number of results to return',
+	default: 100,
+	description: 'Maximum number of transactions to return',
 },
 {
 	displayName: 'Offset',
 	name: 'offset',
 	type: 'number',
-	required: false,
 	displayOptions: {
 		show: {
-			resource: ['ousgFundManagement'],
-			operation: ['getAll'],
+			resource: ['outsgToken'],
+			operation: ['getTransactions'],
 		},
 	},
 	default: 0,
-	description: 'Number of results to skip',
+	description: 'Number of transactions to skip',
 },
 {
-  displayName: 'ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['get'],
-    },
-  },
-  default: '',
-  description: 'The ID of the Ondo Global Markets record to retrieve',
+	displayName: 'Period',
+	name: 'period',
+	type: 'options',
+	displayOptions: {
+		show: {
+			resource: ['outsgToken'],
+			operation: ['getYieldHistory'],
+		},
+	},
+	options: [
+		{
+			name: '1 Day',
+			value: '1d',
+		},
+		{
+			name: '1 Week',
+			value: '1w',
+		},
+		{
+			name: '1 Month',
+			value: '1m',
+		},
+		{
+			name: '3 Months',
+			value: '3m',
+		},
+		{
+			name: '6 Months',
+			value: '6m',
+		},
+		{
+			name: '1 Year',
+			value: '1y',
+		},
+	],
+	default: '1m',
+	description: 'The time period for yield history',
 },
 {
-  displayName: 'ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['update'],
-    },
-  },
-  default: '',
-  description: 'The ID of the Ondo Global Markets record to update',
+	displayName: 'Region',
+	name: 'region',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getAllAssets'],
+		},
+	},
+	default: '',
+	description: 'Filter assets by region',
 },
 {
-  displayName: 'ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['delete'],
-    },
-  },
-  default: '',
-  description: 'The ID of the Ondo Global Markets record to delete',
+	displayName: 'Asset Type',
+	name: 'asset_type',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getAllAssets'],
+		},
+	},
+	default: '',
+	description: 'Filter assets by type',
 },
 {
-  displayName: 'Limit',
-  name: 'limit',
-  type: 'number',
-  required: false,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['getAll'],
-    },
-  },
-  default: 100,
-  description: 'The maximum number of records to return',
+	displayName: 'Asset ID',
+	name: 'id',
+	type: 'string',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getAsset'],
+		},
+	},
+	default: '',
+	description: 'The ID of the asset to retrieve',
 },
 {
-  displayName: 'Offset',
-  name: 'offset',
-  type: 'number',
-  required: false,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['getAll'],
-    },
-  },
-  default: 0,
-  description: 'The number of records to skip',
+	displayName: 'Symbols',
+	name: 'symbols',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getMarketPrices'],
+		},
+	},
+	default: '',
+	description: 'Comma-separated list of asset symbols',
 },
 {
-  displayName: 'Data',
-  name: 'data',
-  type: 'json',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['create'],
-    },
-  },
-  default: '{}',
-  description: 'The data for creating the Ondo Global Markets record',
+	displayName: 'Period',
+	name: 'period',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getTradingVolume'],
+		},
+	},
+	default: '',
+	description: 'Time period for volume data (e.g., 24h, 7d, 30d)',
 },
 {
-  displayName: 'Data',
-  name: 'data',
-  type: 'json',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['ondoGlobalMarkets'],
-      operation: ['update'],
-    },
-  },
-  default: '{}',
-  description: 'The data for updating the Ondo Global Markets record',
+	displayName: 'Region',
+	name: 'region',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getTradingVolume'],
+		},
+	},
+	default: '',
+	description: 'Filter volume data by region',
 },
 {
-  displayName: 'ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['get', 'update', 'delete'],
-    },
-  },
-  default: '',
-  description: 'The ID of the token pricing and NAV record',
+	displayName: 'Jurisdiction',
+	name: 'jurisdiction',
+	type: 'string',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getComplianceStatus'],
+		},
+	},
+	default: '',
+	description: 'The jurisdiction to check compliance status for',
 },
 {
-  displayName: 'Token Symbol',
-  name: 'tokenSymbol',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: '',
-  description: 'The symbol of the token',
+	displayName: 'Asset',
+	name: 'asset',
+	type: 'string',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['createTrade'],
+		},
+	},
+	default: '',
+	description: 'The asset to trade',
 },
 {
-  displayName: 'Price',
-  name: 'price',
-  type: 'number',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: 0,
-  description: 'The price of the token',
+	displayName: 'Amount',
+	name: 'amount',
+	type: 'number',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['createTrade'],
+		},
+	},
+	default: 0,
+	description: 'The amount to trade',
 },
 {
-  displayName: 'NAV (Net Asset Value)',
-  name: 'nav',
-  type: 'number',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: 0,
-  description: 'The net asset value of the token',
+	displayName: 'Side',
+	name: 'side',
+	type: 'options',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['createTrade'],
+		},
+	},
+	options: [
+		{
+			name: 'Buy',
+			value: 'buy',
+		},
+		{
+			name: 'Sell',
+			value: 'sell',
+		},
+	],
+	default: 'buy',
+	description: 'The side of the trade (buy or sell)',
 },
 {
-  displayName: 'Currency',
-  name: 'currency',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: 'USD',
-  description: 'The currency for the price and NAV',
+	displayName: 'Limit',
+	name: 'limit',
+	type: 'number',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getTradeHistory'],
+		},
+	},
+	default: 50,
+	description: 'Maximum number of trades to return',
 },
 {
-  displayName: 'Timestamp',
-  name: 'timestamp',
-  type: 'dateTime',
-  required: false,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: '',
-  description: 'The timestamp for this pricing data',
-},
-{
-  displayName: 'Limit',
-  name: 'limit',
-  type: 'number',
-  required: false,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['getAll'],
-    },
-  },
-  default: 100,
-  description: 'Maximum number of records to return',
-},
-{
-  displayName: 'Offset',
-  name: 'offset',
-  type: 'number',
-  required: false,
-  displayOptions: {
-    show: {
-      resource: ['tokenPricingAndNav'],
-      operation: ['getAll'],
-    },
-  },
-  default: 0,
-  description: 'Number of records to skip',
-},
-{
-  displayName: 'Redemption and Subscription ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['get', 'update', 'delete'],
-    },
-  },
-  default: '',
-  description: 'The ID of the redemption and subscription record',
-},
-{
-  displayName: 'Fund ID',
-  name: 'fundId',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['create'],
-    },
-  },
-  default: '',
-  description: 'The ID of the fund',
-},
-{
-  displayName: 'Type',
-  name: 'type',
-  type: 'options',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['create', 'update'],
-    },
-  },
-  options: [
-    {
-      name: 'Redemption',
-      value: 'redemption',
-    },
-    {
-      name: 'Subscription',
-      value: 'subscription',
-    },
-  ],
-  default: 'subscription',
-  description: 'The type of transaction',
-},
-{
-  displayName: 'Amount',
-  name: 'amount',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: '',
-  description: 'The amount to redeem or subscribe',
-},
-{
-  displayName: 'Investor Address',
-  name: 'investorAddress',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: '',
-  description: 'The address of the investor',
-},
-{
-  displayName: 'Status',
-  name: 'status',
-  type: 'options',
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['create', 'update'],
-    },
-  },
-  options: [
-    {
-      name: 'Pending',
-      value: 'pending',
-    },
-    {
-      name: 'Confirmed',
-      value: 'confirmed',
-    },
-    {
-      name: 'Failed',
-      value: 'failed',
-    },
-  ],
-  default: 'pending',
-  description: 'The status of the transaction',
-},
-{
-  displayName: 'Limit',
-  name: 'limit',
-  type: 'number',
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['getAll'],
-    },
-  },
-  default: 100,
-  description: 'Maximum number of records to return',
-},
-{
-  displayName: 'Offset',
-  name: 'offset',
-  type: 'number',
-  displayOptions: {
-    show: {
-      resource: ['redemptionsAndSubscriptions'],
-      operation: ['getAll'],
-    },
-  },
-  default: 0,
-  description: 'Number of records to skip',
-},
-{
-  displayName: 'Lending ID',
-  name: 'id',
-  type: 'string',
-  required: true,
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['get', 'update', 'delete'],
-    },
-  },
-  default: '',
-  description: 'The ID of the lending position',
+	displayName: 'Offset',
+	name: 'offset',
+	type: 'number',
+	displayOptions: {
+		show: {
+			resource: ['globalMarkets'],
+			operation: ['getTradeHistory'],
+		},
+	},
+	default: 0,
+	description: 'Number of trades to skip',
 },
 {
   displayName: 'Asset',
   name: 'asset',
   type: 'string',
   required: true,
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['create'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['fluxFinance'], 
+      operation: ['getMarket'] 
+    } 
   },
   default: '',
-  description: 'The asset to lend',
+  description: 'The asset symbol to get market details for',
+},
+{
+  displayName: 'Address',
+  name: 'address',
+  type: 'string',
+  required: true,
+  displayOptions: { 
+    show: { 
+      resource: ['fluxFinance'], 
+      operation: ['getAccountPosition'] 
+    } 
+  },
+  default: '',
+  description: 'The wallet address to get position for',
+},
+{
+  displayName: 'Asset',
+  name: 'asset',
+  type: 'string',
+  required: true,
+  displayOptions: { 
+    show: { 
+      resource: ['fluxFinance'], 
+      operation: ['supplyAsset', 'borrowAsset', 'repayLoan', 'redeemAsset'] 
+    } 
+  },
+  default: '',
+  description: 'The asset symbol for the operation',
 },
 {
   displayName: 'Amount',
   name: 'amount',
   type: 'string',
   required: true,
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['create', 'update'],
-    },
+  displayOptions: { 
+    show: { 
+      resource: ['fluxFinance'], 
+      operation: ['supplyAsset', 'borrowAsset', 'repayLoan', 'redeemAsset'] 
+    } 
   },
   default: '',
-  description: 'The amount to lend',
+  description: 'The amount for the operation',
 },
 {
-  displayName: 'Interest Rate',
-  name: 'interestRate',
+  displayName: 'Asset',
+  name: 'asset',
   type: 'string',
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['create', 'update'],
-    },
+  required: false,
+  displayOptions: { 
+    show: { 
+      resource: ['fluxFinance'], 
+      operation: ['getInterestRates'] 
+    } 
   },
   default: '',
-  description: 'The interest rate for the lending position',
+  description: 'The asset symbol to get rates for (optional - if not provided, returns all rates)',
 },
 {
-  displayName: 'Duration',
-  name: 'duration',
-  type: 'number',
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['create', 'update'],
-    },
-  },
-  default: 0,
-  description: 'The duration of the lending position in days',
+	displayName: 'Address',
+	name: 'address',
+	type: 'string',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['portfolio'],
+			operation: ['getPortfolio', 'getAssetAllocation', 'getPerformance', 'getYieldSummary', 'rebalancePortfolio', 'getPortfolioHistory', 'getRiskMetrics'],
+		},
+	},
+	default: '',
+	description: 'The wallet address for the portfolio',
 },
 {
-  displayName: 'Limit',
-  name: 'limit',
-  type: 'number',
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['getAll'],
-    },
-  },
-  default: 10,
-  description: 'Maximum number of results to return',
+	displayName: 'Period',
+	name: 'period',
+	type: 'options',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['portfolio'],
+			operation: ['getPerformance'],
+		},
+	},
+	options: [
+		{
+			name: '1 Day',
+			value: '1d',
+		},
+		{
+			name: '7 Days',
+			value: '7d',
+		},
+		{
+			name: '30 Days',
+			value: '30d',
+		},
+		{
+			name: '90 Days',
+			value: '90d',
+		},
+		{
+			name: '1 Year',
+			value: '1y',
+		},
+		{
+			name: 'All Time',
+			value: 'all',
+		},
+	],
+	default: '30d',
+	description: 'Time period for performance metrics',
 },
 {
-  displayName: 'Offset',
-  name: 'offset',
-  type: 'number',
-  displayOptions: {
-    show: {
-      resource: ['fluxFinanceLending'],
-      operation: ['getAll'],
-    },
-  },
-  default: 0,
-  description: 'Number of results to skip',
+	displayName: 'Period',
+	name: 'period',
+	type: 'options',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['portfolio'],
+			operation: ['getPortfolioHistory'],
+		},
+	},
+	options: [
+		{
+			name: '1 Day',
+			value: '1d',
+		},
+		{
+			name: '7 Days',
+			value: '7d',
+		},
+		{
+			name: '30 Days',
+			value: '30d',
+		},
+		{
+			name: '90 Days',
+			value: '90d',
+		},
+		{
+			name: '1 Year',
+			value: '1y',
+		},
+		{
+			name: 'All Time',
+			value: 'all',
+		},
+	],
+	default: '30d',
+	description: 'Time period for historical data',
+},
+{
+	displayName: 'Targets',
+	name: 'targets',
+	type: 'json',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['portfolio'],
+			operation: ['rebalancePortfolio'],
+		},
+	},
+	default: '{}',
+	description: 'Target allocation percentages for portfolio rebalancing as JSON object',
+	placeholder: '{"OUSG": 50, "OMMF": 30, "USDY": 20}',
 },
     ],
   };
@@ -1080,18 +894,16 @@ export class OndoFinance implements INodeType {
     const resource = this.getNodeParameter('resource', 0) as string;
 
     switch (resource) {
-      case 'usdyTokenOperations':
-        return [await executeUsdyTokenOperationsOperations.call(this, items)];
-      case 'ousgFundManagement':
-        return [await executeOusgFundManagementOperations.call(this, items)];
-      case 'ondoGlobalMarkets':
-        return [await executeOndoGlobalMarketsOperations.call(this, items)];
-      case 'tokenPricingAndNav':
-        return [await executeTokenPricingAndNavOperations.call(this, items)];
-      case 'redemptionsAndSubscriptions':
-        return [await executeRedemptionsAndSubscriptionsOperations.call(this, items)];
-      case 'fluxFinanceLending':
-        return [await executeFluxFinanceLendingOperations.call(this, items)];
+      case 'usdyToken':
+        return [await executeUsdyTokenOperations.call(this, items)];
+      case 'outsgToken':
+        return [await executeOUSGTokenOperations.call(this, items)];
+      case 'globalMarkets':
+        return [await executeGlobalMarketsOperations.call(this, items)];
+      case 'fluxFinance':
+        return [await executeFluxFinanceOperations.call(this, items)];
+      case 'portfolio':
+        return [await executePortfolioOperations.call(this, items)];
       default:
         throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not supported`);
     }
@@ -1102,96 +914,642 @@ export class OndoFinance implements INodeType {
 // Resource Handler Functions
 // ============================================================
 
-async function executeUsdyTokenOperationsOperations(
+async function executeUsdyTokenOperations(
   this: IExecuteFunctions,
   items: INodeExecutionData[],
 ): Promise<INodeExecutionData[]> {
   const returnData: INodeExecutionData[] = [];
   const operation = this.getNodeParameter('operation', 0) as string;
-  
-  const credentials = await this.getCredentials('ondoFinanceApi');
-  const baseUrl = credentials.baseUrl || 'https://api.ondo.finance';
+  const credentials = await this.getCredentials('ondofinanceApi') as any;
+
+  for (let i = 0; i < items.length; i++) {
+    try {
+      let result: any;
+      const baseOptions: any = {
+        headers: {
+          'Authorization': `Bearer ${credentials.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        json: true,
+      };
+
+      switch (operation) {
+        case 'getBalance': {
+          const address = this.getNodeParameter('address', i) as string;
+          const options: any = {
+            ...baseOptions,
+            method: 'GET',
+            url: `${credentials.baseUrl}/tokens/usdy/balance/${address}`,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getTotalSupply': {
+          const options: any = {
+            ...baseOptions,
+            method: 'GET',
+            url: `${credentials.baseUrl}/tokens/usdy/supply`,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getCurrentYield': {
+          const options: any = {
+            ...baseOptions,
+            method: 'GET',
+            url: `${credentials.baseUrl}/tokens/usdy/yield`,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'mintTokens': {
+          const amount = this.getNodeParameter('amount', i) as string;
+          const recipient = this.getNodeParameter('recipient', i) as string;
+          const options: any = {
+            ...baseOptions,
+            method: 'POST',
+            url: `${credentials.baseUrl}/tokens/usdy/mint`,
+            body: {
+              amount,
+              recipient,
+            },
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'redeemTokens': {
+          const amount = this.getNodeParameter('amount', i) as string;
+          const address = this.getNodeParameter('address', i) as string;
+          const options: any = {
+            ...baseOptions,
+            method: 'POST',
+            url: `${credentials.baseUrl}/tokens/usdy/redeem`,
+            body: {
+              amount,
+              address,
+            },
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getTransactions': {
+          const address = this.getNodeParameter('address', i) as string;
+          const limit = this.getNodeParameter('limit', i) as number;
+          const offset = this.getNodeParameter('offset', i) as number;
+          
+          let url = `${credentials.baseUrl}/tokens/usdy/transactions`;
+          const queryParams: string[] = [];
+          
+          if (address) queryParams.push(`address=${encodeURIComponent(address)}`);
+          if (limit) queryParams.push(`limit=${limit}`);
+          if (offset) queryParams.push(`offset=${offset}`);
+          
+          if (queryParams.length > 0) {
+            url += `?${queryParams.join('&')}`;
+          }
+
+          const options: any = {
+            ...baseOptions,
+            method: 'GET',
+            url,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getPrice': {
+          const options: any = {
+            ...baseOptions,
+            method: 'GET',
+            url: `${credentials.baseUrl}/tokens/usdy/price`,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        default:
+          throw new NodeOperationError(
+            this.getNode(),
+            `Unknown operation: ${operation}`,
+            { itemIndex: i }
+          );
+      }
+
+      returnData.push({
+        json: result,
+        pairedItem: { item: i },
+      });
+
+    } catch (error: any) {
+      if (this.continueOnFail()) {
+        returnData.push({
+          json: { error: error.message },
+          pairedItem: { item: i },
+        });
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  return returnData;
+}
+
+async function executeOUSGTokenOperations(
+	this: IExecuteFunctions,
+	items: INodeExecutionData[],
+): Promise<INodeExecutionData[]> {
+	const returnData: INodeExecutionData[] = [];
+	const operation = this.getNodeParameter('operation', 0) as string;
+	const credentials = await this.getCredentials('ondofinanceApi') as any;
+
+	for (let i = 0; i < items.length; i++) {
+		try {
+			let result: any;
+
+			switch (operation) {
+				case 'getBalance': {
+					const address = this.getNodeParameter('address', i) as string;
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/balance/${address}`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getTotalSupply': {
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/supply`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getNetAssetValue': {
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/nav`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'transferTokens': {
+					const from = this.getNodeParameter('from', i) as string;
+					const to = this.getNodeParameter('to', i) as string;
+					const amount = this.getNodeParameter('amount', i) as string;
+					const options: any = {
+						method: 'POST',
+						url: `${credentials.baseUrl}/tokens/ousg/transfer`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						body: {
+							from,
+							to,
+							amount,
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getTransactions': {
+					const address = this.getNodeParameter('address', i) as string;
+					const limit = this.getNodeParameter('limit', i) as number;
+					const offset = this.getNodeParameter('offset', i) as number;
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/transactions`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						qs: {
+							address,
+							limit,
+							offset,
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getYieldHistory': {
+					const period = this.getNodeParameter('period', i) as string;
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/yield`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						qs: {
+							period,
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getPrice': {
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/tokens/ousg/price`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				default:
+					throw new NodeOperationError(
+						this.getNode(),
+						`Unknown operation: ${operation}`,
+					);
+			}
+
+			returnData.push({
+				json: result,
+				pairedItem: { item: i },
+			});
+		} catch (error: any) {
+			if (this.continueOnFail()) {
+				returnData.push({
+					json: { error: error.message },
+					pairedItem: { item: i },
+				});
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	return returnData;
+}
+
+async function executeGlobalMarketsOperations(
+	this: IExecuteFunctions,
+	items: INodeExecutionData[],
+): Promise<INodeExecutionData[]> {
+	const returnData: INodeExecutionData[] = [];
+	const operation = this.getNodeParameter('operation', 0) as string;
+	const credentials = await this.getCredentials('ondofinanceApi') as any;
+
+	for (let i = 0; i < items.length; i++) {
+		try {
+			let result: any;
+
+			const baseOptions: any = {
+				headers: {
+					'Authorization': `Bearer ${credentials.apiKey}`,
+					'Content-Type': 'application/json',
+				},
+				json: true,
+			};
+
+			switch (operation) {
+				case 'getAllAssets': {
+					const region = this.getNodeParameter('region', i) as string;
+					const assetType = this.getNodeParameter('asset_type', i) as string;
+					
+					const queryParams = new URLSearchParams();
+					if (region) queryParams.append('region', region);
+					if (assetType) queryParams.append('asset_type', assetType);
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/assets${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getAsset': {
+					const id = this.getNodeParameter('id', i) as string;
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/asset/${id}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getMarketPrices': {
+					const symbols = this.getNodeParameter('symbols', i) as string;
+					
+					const queryParams = new URLSearchParams();
+					if (symbols) queryParams.append('symbols', symbols);
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/prices${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getTradingVolume': {
+					const period = this.getNodeParameter('period', i) as string;
+					const region = this.getNodeParameter('region', i) as string;
+					
+					const queryParams = new URLSearchParams();
+					if (period) queryParams.append('period', period);
+					if (region) queryParams.append('region', region);
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/volume${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getComplianceStatus': {
+					const jurisdiction = this.getNodeParameter('jurisdiction', i) as string;
+					
+					const queryParams = new URLSearchParams();
+					if (jurisdiction) queryParams.append('jurisdiction', jurisdiction);
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/compliance${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'createTrade': {
+					const asset = this.getNodeParameter('asset', i) as string;
+					const amount = this.getNodeParameter('amount', i) as number;
+					const side = this.getNodeParameter('side', i) as string;
+					
+					const body = {
+						asset,
+						amount,
+						side,
+					};
+					
+					const options: any = {
+						...baseOptions,
+						method: 'POST',
+						url: `${credentials.baseUrl}/markets/global/trade`,
+						body,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getTradeHistory': {
+					const limit = this.getNodeParameter('limit', i) as number;
+					const offset = this.getNodeParameter('offset', i) as number;
+					
+					const queryParams = new URLSearchParams();
+					if (limit) queryParams.append('limit', limit.toString());
+					if (offset) queryParams.append('offset', offset.toString());
+					
+					const options: any = {
+						...baseOptions,
+						method: 'GET',
+						url: `${credentials.baseUrl}/markets/global/trades${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				default:
+					throw new NodeOperationError(
+						this.getNode(),
+						`Unknown operation: ${operation}`,
+						{ itemIndex: i },
+					);
+			}
+
+			returnData.push({
+				json: result,
+				pairedItem: { item: i },
+			});
+
+		} catch (error: any) {
+			if (this.continueOnFail()) {
+				returnData.push({
+					json: { error: error.message },
+					pairedItem: { item: i },
+				});
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	return returnData;
+}
+
+async function executeFluxFinanceOperations(
+  this: IExecuteFunctions,
+  items: INodeExecutionData[],
+): Promise<INodeExecutionData[]> {
+  const returnData: INodeExecutionData[] = [];
+  const operation = this.getNodeParameter('operation', 0) as string;
+  const credentials = await this.getCredentials('ondofinanceApi') as any;
 
   for (let i = 0; i < items.length; i++) {
     try {
       let result: any;
 
       switch (operation) {
-        case 'create':
-          const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
-          const amount = this.getNodeParameter('amount', i) as string;
-          const operationType = this.getNodeParameter('operationType', i) as string;
-          const recipientAddress = this.getNodeParameter('recipientAddress', i) as string;
-
-          const createBody = {
-            tokenAddress,
-            amount,
-            operationType,
-            ...(recipientAddress && { recipientAddress }),
+        case 'getAllMarkets': {
+          const options: any = {
+            method: 'GET',
+            url: `${credentials.baseUrl}/flux/markets`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            json: true,
           };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
 
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
+        case 'getMarket': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          const options: any = {
+            method: 'GET',
+            url: `${credentials.baseUrl}/flux/market/${asset}`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            json: true,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getAccountPosition': {
+          const address = this.getNodeParameter('address', i) as string;
+          const options: any = {
+            method: 'GET',
+            url: `${credentials.baseUrl}/flux/account/${address}`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            json: true,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'supplyAsset': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          const amount = this.getNodeParameter('amount', i) as string;
+          const options: any = {
             method: 'POST',
-            url: `${baseUrl}/usdy-token-operations`,
-            body: createBody,
+            url: `${credentials.baseUrl}/flux/supply`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: {
+              asset,
+              amount,
+            },
             json: true,
-          });
+          };
+          result = await this.helpers.httpRequest(options) as any;
           break;
+        }
 
-        case 'get':
-          const getId = this.getNodeParameter('id', i) as string;
-          
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
+        case 'borrowAsset': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          const amount = this.getNodeParameter('amount', i) as string;
+          const options: any = {
+            method: 'POST',
+            url: `${credentials.baseUrl}/flux/borrow`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: {
+              asset,
+              amount,
+            },
+            json: true,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'repayLoan': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          const amount = this.getNodeParameter('amount', i) as string;
+          const options: any = {
+            method: 'POST',
+            url: `${credentials.baseUrl}/flux/repay`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: {
+              asset,
+              amount,
+            },
+            json: true,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'redeemAsset': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          const amount = this.getNodeParameter('amount', i) as string;
+          const options: any = {
+            method: 'POST',
+            url: `${credentials.baseUrl}/flux/redeem`,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: {
+              asset,
+              amount,
+            },
+            json: true,
+          };
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getInterestRates': {
+          const asset = this.getNodeParameter('asset', i) as string;
+          let url = `${credentials.baseUrl}/flux/rates`;
+          if (asset) {
+            url += `?asset=${encodeURIComponent(asset)}`;
+          }
+          const options: any = {
             method: 'GET',
-            url: `${baseUrl}/usdy-token-operations/${getId}`,
+            url,
+            headers: {
+              'Authorization': `Bearer ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
             json: true,
-          });
+          };
+          result = await this.helpers.httpRequest(options) as any;
           break;
-
-        case 'getAll':
-          const limit = this.getNodeParameter('limit', i) as number;
-          const offset = this.getNodeParameter('offset', i) as number;
-          
-          const queryParams = new URLSearchParams({
-            limit: limit.toString(),
-            offset: offset.toString(),
-          });
-
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'GET',
-            url: `${baseUrl}/usdy-token-operations?${queryParams}`,
-            json: true,
-          });
-          break;
-
-        case 'update':
-          const updateId = this.getNodeParameter('id', i) as string;
-          const updateFields = this.getNodeParameter('updateFields', i) as any;
-          
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'PUT',
-            url: `${baseUrl}/usdy-token-operations/${updateId}`,
-            body: updateFields,
-            json: true,
-          });
-          break;
-
-        case 'delete':
-          const deleteId = this.getNodeParameter('id', i) as string;
-          
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'DELETE',
-            url: `${baseUrl}/usdy-token-operations/${deleteId}`,
-            json: true,
-          });
-          break;
+        }
 
         default:
           throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
       }
 
       returnData.push({ json: result, pairedItem: { item: i } });
-    } catch (error) {
+    } catch (error: any) {
       if (this.continueOnFail()) {
         returnData.push({ json: { error: error.message }, pairedItem: { item: i } });
       } else {
@@ -1203,638 +1561,171 @@ async function executeUsdyTokenOperationsOperations(
   return returnData;
 }
 
-async function executeOusgFundManagementOperations(
+async function executePortfolioOperations(
 	this: IExecuteFunctions,
 	items: INodeExecutionData[],
 ): Promise<INodeExecutionData[]> {
 	const returnData: INodeExecutionData[] = [];
 	const operation = this.getNodeParameter('operation', 0) as string;
-	
-	// Get credentials - using a generic structure since API documentation is unavailable
-	const credentials = await this.getCredentials('ondoFinanceApi');
-	const baseUrl = credentials.baseUrl as string || 'https://api.ondo.finance';
-	const apiKey = credentials.apiKey as string;
+	const credentials = await this.getCredentials('ondofinanceApi') as any;
 
 	for (let i = 0; i < items.length; i++) {
 		try {
 			let result: any;
-			
+
 			switch (operation) {
-				case 'create':
-					const createData = {
-						fundName: this.getNodeParameter('fundName', i) as string,
-						managementStrategy: this.getNodeParameter('managementStrategy', i) as string,
-						targetAllocation: this.getNodeParameter('targetAllocation', i) as number,
-						riskProfile: this.getNodeParameter('riskProfile', i) as string,
+				case 'getPortfolio': {
+					const address = this.getNodeParameter('address', i) as string;
+					
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/portfolio/${address}`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
 					};
 					
-					result = await this.helpers.httpRequest({
-						method: 'POST',
-						url: `${baseUrl}/ousg-fund-management`,
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getAssetAllocation': {
+					const address = this.getNodeParameter('address', i) as string;
+					
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/portfolio/${address}/allocation`,
 						headers: {
-							'Authorization': `Bearer ${apiKey}`,
+							'Authorization': `Bearer ${credentials.apiKey}`,
 							'Content-Type': 'application/json',
 						},
-						body: createData,
-					});
-					break;
-
-				case 'get':
-					const getId = this.getNodeParameter('id', i) as string;
+						json: true,
+					};
 					
-					result = await this.helpers.httpRequest({
-						method: 'GET',
-						url: `${baseUrl}/ousg-fund-management/${getId}`,
-						headers: {
-							'Authorization': `Bearer ${apiKey}`,
-						},
-					});
+					result = await this.helpers.httpRequest(options) as any;
 					break;
+				}
 
-				case 'getAll':
-					const limit = this.getNodeParameter('limit', i, 50) as number;
-					const offset = this.getNodeParameter('offset', i, 0) as number;
+				case 'getPerformance': {
+					const address = this.getNodeParameter('address', i) as string;
+					const period = this.getNodeParameter('period', i) as string;
 					
-					result = await this.helpers.httpRequest({
+					const options: any = {
 						method: 'GET',
-						url: `${baseUrl}/ousg-fund-management`,
+						url: `${credentials.baseUrl}/portfolio/${address}/performance`,
 						headers: {
-							'Authorization': `Bearer ${apiKey}`,
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
 						},
 						qs: {
-							limit,
-							offset,
+							period,
 						},
-					});
+						json: true,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
 					break;
+				}
 
-				case 'update':
-					const updateId = this.getNodeParameter('id', i) as string;
-					const updateData: any = {};
+				case 'getYieldSummary': {
+					const address = this.getNodeParameter('address', i) as string;
 					
-					// Only include fields that are provided
-					const managementStrategy = this.getNodeParameter('managementStrategy', i, '') as string;
-					const targetAllocation = this.getNodeParameter('targetAllocation', i, null) as number;
-					const riskProfile = this.getNodeParameter('riskProfile', i, '') as string;
-					
-					if (managementStrategy) updateData.managementStrategy = managementStrategy;
-					if (targetAllocation !== null) updateData.targetAllocation = targetAllocation;
-					if (riskProfile) updateData.riskProfile = riskProfile;
-					
-					result = await this.helpers.httpRequest({
-						method: 'PUT',
-						url: `${baseUrl}/ousg-fund-management/${updateId}`,
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/portfolio/${address}/yield`,
 						headers: {
-							'Authorization': `Bearer ${apiKey}`,
+							'Authorization': `Bearer ${credentials.apiKey}`,
 							'Content-Type': 'application/json',
 						},
-						body: updateData,
-					});
-					break;
-
-				case 'delete':
-					const deleteId = this.getNodeParameter('id', i) as string;
+						json: true,
+					};
 					
-					result = await this.helpers.httpRequest({
-						method: 'DELETE',
-						url: `${baseUrl}/ousg-fund-management/${deleteId}`,
-						headers: {
-							'Authorization': `Bearer ${apiKey}`,
-						},
-					});
+					result = await this.helpers.httpRequest(options) as any;
 					break;
+				}
+
+				case 'rebalancePortfolio': {
+					const address = this.getNodeParameter('address', i) as string;
+					const targets = this.getNodeParameter('targets', i) as string;
+					
+					let parsedTargets: any;
+					try {
+						parsedTargets = JSON.parse(targets);
+					} catch (error: any) {
+						throw new NodeOperationError(this.getNode(), `Invalid JSON in targets parameter: ${error.message}`);
+					}
+					
+					const options: any = {
+						method: 'POST',
+						url: `${credentials.baseUrl}/portfolio/${address}/rebalance`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						body: {
+							targets: parsedTargets,
+						},
+						json: true,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getPortfolioHistory': {
+					const address = this.getNodeParameter('address', i) as string;
+					const period = this.getNodeParameter('period', i) as string;
+					
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/portfolio/${address}/history`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						qs: {
+							period,
+						},
+						json: true,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
+
+				case 'getRiskMetrics': {
+					const address = this.getNodeParameter('address', i) as string;
+					
+					const options: any = {
+						method: 'GET',
+						url: `${credentials.baseUrl}/portfolio/${address}/risk`,
+						headers: {
+							'Authorization': `Bearer ${credentials.apiKey}`,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+					
+					result = await this.helpers.httpRequest(options) as any;
+					break;
+				}
 
 				default:
 					throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
 			}
 
 			returnData.push({ json: result, pairedItem: { item: i } });
-		} catch (error) {
+
+		} catch (error: any) {
 			if (this.continueOnFail()) {
-				returnData.push({
-					json: { error: error.message },
-					pairedItem: { item: i },
-				});
+				returnData.push({ json: { error: error.message }, pairedItem: { item: i } });
 			} else {
-				throw new NodeApiError(this.getNode(), error);
+				throw error;
 			}
 		}
 	}
 
 	return returnData;
-}
-
-async function executeOndoGlobalMarketsOperations(
-  this: IExecuteFunctions,
-  items: INodeExecutionData[],
-): Promise<INodeExecutionData[]> {
-  const returnData: INodeExecutionData[] = [];
-  const operation = this.getNodeParameter('operation', 0) as string;
-  
-  // Get credentials (API key, base URL, etc.)
-  let credentials: any;
-  try {
-    credentials = await this.getCredentials('ondoFinanceApi');
-  } catch (error) {
-    throw new NodeOperationError(this.getNode(), 'No credentials provided');
-  }
-
-  const baseUrl = credentials.baseUrl || 'https://api.ondo.finance';
-
-  for (let i = 0; i < items.length; i++) {
-    try {
-      let result: any;
-
-      switch (operation) {
-        case 'create': {
-          const data = this.getNodeParameter('data', i) as object;
-          
-          const options = {
-            method: 'POST',
-            url: `${baseUrl}/ondo-global-markets`,
-            headers: {
-              'Authorization': `Bearer ${credentials.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            json: data,
-          };
-
-          result = await this.helpers.requestWithAuthentication.call(
-            this,
-            'ondoFinanceApi',
-            options,
-          );
-          break;
-        }
-
-        case 'get': {
-          const id = this.getNodeParameter('id', i) as string;
-          
-          const options = {
-            method: 'GET',
-            url: `${baseUrl}/ondo-global-markets/${id}`,
-            headers: {
-              'Authorization': `Bearer ${credentials.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-          };
-
-          result = await this.helpers.requestWithAuthentication.call(
-            this,
-            'ondoFinanceApi',
-            options,
-          );
-          break;
-        }
-
-        case 'getAll': {
-          const limit = this.getNodeParameter('limit', i, 100) as number;
-          const offset = this.getNodeParameter('offset', i, 0) as number;
-          
-          const options = {
-            method: 'GET',
-            url: `${baseUrl}/ondo-global-markets`,
-            headers: {
-              'Authorization': `Bearer ${credentials.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            qs: {
-              limit,
-              offset,
-            },
-          };
-
-          result = await this.helpers.requestWithAuthentication.call(
-            this,
-            'ondoFinanceApi',
-            options,
-          );
-          break;
-        }
-
-        case 'update': {
-          const id = this.getNodeParameter('id', i) as string;
-          const data = this.getNodeParameter('data', i) as object;
-          
-          const options = {
-            method: 'PUT',
-            url: `${baseUrl}/ondo-global-markets/${id}`,
-            headers: {
-              'Authorization': `Bearer ${credentials.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            json: data,
-          };
-
-          result = await this.helpers.requestWithAuthentication.call(
-            this,
-            'ondoFinanceApi',
-            options,
-          );
-          break;
-        }
-
-        case 'delete': {
-          const id = this.getNodeParameter('id', i) as string;
-          
-          const options = {
-            method: 'DELETE',
-            url: `${baseUrl}/ondo-global-markets/${id}`,
-            headers: {
-              'Authorization': `Bearer ${credentials.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-          };
-
-          result = await this.helpers.requestWithAuthentication.call(
-            this,
-            'ondoFinanceApi',
-            options,
-          );
-          break;
-        }
-
-        default:
-          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
-      }
-
-      returnData.push({ 
-        json: result,
-        pairedItem: { item: i }
-      });
-
-    } catch (error) {
-      if (this.continueOnFail()) {
-        returnData.push({ 
-          json: { error: error.message },
-          pairedItem: { item: i }
-        });
-      } else {
-        if (error.response) {
-          throw new NodeApiError(this.getNode(), error);
-        }
-        throw new NodeOperationError(this.getNode(), error.message);
-      }
-    }
-  }
-
-  return returnData;
-}
-
-async function executeTokenPricingAndNavOperations(
-  this: IExecuteFunctions,
-  items: INodeExecutionData[],
-): Promise<INodeExecutionData[]> {
-  const returnData: INodeExecutionData[] = [];
-  const operation = this.getNodeParameter('operation', 0) as string;
-  
-  const credentials = await this.getCredentials('ondoFinanceApi');
-  const baseUrl = credentials?.baseUrl || 'https://api.ondo.finance';
-  const apiKey = credentials?.apiKey as string;
-
-  for (let i = 0; i < items.length; i++) {
-    try {
-      let result: any;
-      const requestOptions: any = {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        json: true,
-      };
-
-      switch (operation) {
-        case 'create':
-          const createData = {
-            tokenSymbol: this.getNodeParameter('tokenSymbol', i) as string,
-            price: this.getNodeParameter('price', i) as number,
-            nav: this.getNodeParameter('nav', i) as number,
-            currency: this.getNodeParameter('currency', i) as string,
-            timestamp: this.getNodeParameter('timestamp', i) as string,
-          };
-          
-          result = await this.helpers.httpRequest({
-            method: 'POST',
-            url: `${baseUrl}/token-pricing-and-nav`,
-            body: createData,
-            ...requestOptions,
-          });
-          break;
-
-        case 'get':
-          const getId = this.getNodeParameter('id', i) as string;
-          
-          result = await this.helpers.httpRequest({
-            method: 'GET',
-            url: `${baseUrl}/token-pricing-and-nav/${getId}`,
-            ...requestOptions,
-          });
-          break;
-
-        case 'getAll':
-          const limit = this.getNodeParameter('limit', i) as number;
-          const offset = this.getNodeParameter('offset', i) as number;
-          
-          result = await this.helpers.httpRequest({
-            method: 'GET',
-            url: `${baseUrl}/token-pricing-and-nav`,
-            qs: {
-              limit,
-              offset,
-            },
-            ...requestOptions,
-          });
-          break;
-
-        case 'update':
-          const updateId = this.getNodeParameter('id', i) as string;
-          const updateData = {
-            tokenSymbol: this.getNodeParameter('tokenSymbol', i) as string,
-            price: this.getNodeParameter('price', i) as number,
-            nav: this.getNodeParameter('nav', i) as number,
-            currency: this.getNodeParameter('currency', i) as string,
-            timestamp: this.getNodeParameter('timestamp', i) as string,
-          };
-          
-          result = await this.helpers.httpRequest({
-            method: 'PUT',
-            url: `${baseUrl}/token-pricing-and-nav/${updateId}`,
-            body: updateData,
-            ...requestOptions,
-          });
-          break;
-
-        case 'delete':
-          const deleteId = this.getNodeParameter('id', i) as string;
-          
-          result = await this.helpers.httpRequest({
-            method: 'DELETE',
-            url: `${baseUrl}/token-pricing-and-nav/${deleteId}`,
-            ...requestOptions,
-          });
-          break;
-
-        default:
-          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
-      }
-
-      returnData.push({ json: result, pairedItem: { item: i } });
-    } catch (error) {
-      if (this.continueOnFail()) {
-        returnData.push({ 
-          json: { error: error.message }, 
-          pairedItem: { item: i } 
-        });
-      } else {
-        throw new NodeApiError(this.getNode(), error);
-      }
-    }
-  }
-
-  return returnData;
-}
-
-async function executeRedemptionsAndSubscriptionsOperations(
-  this: IExecuteFunctions,
-  items: INodeExecutionData[],
-): Promise<INodeExecutionData[]> {
-  const returnData: INodeExecutionData[] = [];
-  const operation = this.getNodeParameter('operation', 0) as string;
-  
-  const credentials = await this.getCredentials('ondoFinanceApi');
-  const baseUrl = credentials.baseUrl || 'https://api.ondo.finance';
-  const apiKey = credentials.apiKey as string;
-
-  for (let i = 0; i < items.length; i++) {
-    try {
-      let result: any;
-      
-      const requestOptions: any = {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        json: true,
-      };
-
-      switch (operation) {
-        case 'create':
-          const fundId = this.getNodeParameter('fundId', i) as string;
-          const type = this.getNodeParameter('type', i) as string;
-          const amount = this.getNodeParameter('amount', i) as string;
-          const investorAddress = this.getNodeParameter('investorAddress', i) as string;
-          const status = this.getNodeParameter('status', i) as string;
-          
-          requestOptions.method = 'POST';
-          requestOptions.url = `${baseUrl}/redemptions-and-subscriptions`;
-          requestOptions.body = {
-            fundId,
-            type,
-            amount,
-            investorAddress,
-            status,
-          };
-          
-          result = await this.helpers.httpRequest(requestOptions);
-          break;
-
-        case 'get':
-          const getId = this.getNodeParameter('id', i) as string;
-          
-          requestOptions.method = 'GET';
-          requestOptions.url = `${baseUrl}/redemptions-and-subscriptions/${getId}`;
-          
-          result = await this.helpers.httpRequest(requestOptions);
-          break;
-
-        case 'getAll':
-          const limit = this.getNodeParameter('limit', i, 100) as number;
-          const offset = this.getNodeParameter('offset', i, 0) as number;
-          
-          requestOptions.method = 'GET';
-          requestOptions.url = `${baseUrl}/redemptions-and-subscriptions`;
-          requestOptions.qs = { limit, offset };
-          
-          result = await this.helpers.httpRequest(requestOptions);
-          break;
-
-        case 'update':
-          const updateId = this.getNodeParameter('id', i) as string;
-          const updateType = this.getNodeParameter('type', i) as string;
-          const updateAmount = this.getNodeParameter('amount', i) as string;
-          const updateInvestorAddress = this.getNodeParameter('investorAddress', i) as string;
-          const updateStatus = this.getNodeParameter('status', i) as string;
-          
-          requestOptions.method = 'PUT';
-          requestOptions.url = `${baseUrl}/redemptions-and-subscriptions/${updateId}`;
-          requestOptions.body = {
-            type: updateType,
-            amount: updateAmount,
-            investorAddress: updateInvestorAddress,
-            status: updateStatus,
-          };
-          
-          result = await this.helpers.httpRequest(requestOptions);
-          break;
-
-        case 'delete':
-          const deleteId = this.getNodeParameter('id', i) as string;
-          
-          requestOptions.method = 'DELETE';
-          requestOptions.url = `${baseUrl}/redemptions-and-subscriptions/${deleteId}`;
-          
-          result = await this.helpers.httpRequest(requestOptions);
-          break;
-
-        default:
-          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`, {
-            itemIndex: i,
-          });
-      }
-
-      returnData.push({
-        json: result,
-        pairedItem: { item: i },
-      });
-    } catch (error) {
-      if (this.continueOnFail()) {
-        returnData.push({
-          json: { error: error.message },
-          pairedItem: { item: i },
-        });
-      } else {
-        throw new NodeApiError(this.getNode(), error, { itemIndex: i });
-      }
-    }
-  }
-
-  return returnData;
-}
-
-async function executeFluxFinanceLendingOperations(
-  this: IExecuteFunctions,
-  items: INodeExecutionData[],
-): Promise<INodeExecutionData[]> {
-  const returnData: INodeExecutionData[] = [];
-  const operation = this.getNodeParameter('operation', 0) as string;
-
-  // Get credentials
-  let credentials;
-  try {
-    credentials = await this.getCredentials('ondoFinanceApi');
-  } catch (error) {
-    throw new NodeApiError(this.getNode(), error as JsonObject);
-  }
-
-  const baseUrl = credentials.baseUrl || 'https://api.fluxfinance.com';
-
-  for (let i = 0; i < items.length; i++) {
-    try {
-      let result: any;
-
-      switch (operation) {
-        case 'create':
-          const asset = this.getNodeParameter('asset', i) as string;
-          const amount = this.getNodeParameter('amount', i) as string;
-          const interestRate = this.getNodeParameter('interestRate', i, '') as string;
-          const duration = this.getNodeParameter('duration', i, 0) as number;
-
-          const createBody: any = {
-            asset,
-            amount,
-          };
-
-          if (interestRate) {
-            createBody.interestRate = interestRate;
-          }
-
-          if (duration > 0) {
-            createBody.duration = duration;
-          }
-
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'POST',
-            url: `${baseUrl}/flux-finance-lending`,
-            body: createBody,
-            json: true,
-          });
-          break;
-
-        case 'get':
-          const getId = this.getNodeParameter('id', i) as string;
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'GET',
-            url: `${baseUrl}/flux-finance-lending/${getId}`,
-            json: true,
-          });
-          break;
-
-        case 'getAll':
-          const limit = this.getNodeParameter('limit', i, 10) as number;
-          const offset = this.getNodeParameter('offset', i, 0) as number;
-          
-          const queryParams = new URLSearchParams();
-          queryParams.append('limit', limit.toString());
-          queryParams.append('offset', offset.toString());
-
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'GET',
-            url: `${baseUrl}/flux-finance-lending?${queryParams.toString()}`,
-            json: true,
-          });
-          break;
-
-        case 'update':
-          const updateId = this.getNodeParameter('id', i) as string;
-          const updateAmount = this.getNodeParameter('amount', i) as string;
-          const updateInterestRate = this.getNodeParameter('interestRate', i, '') as string;
-          const updateDuration = this.getNodeParameter('duration', i, 0) as number;
-
-          const updateBody: any = {
-            amount: updateAmount,
-          };
-
-          if (updateInterestRate) {
-            updateBody.interestRate = updateInterestRate;
-          }
-
-          if (updateDuration > 0) {
-            updateBody.duration = updateDuration;
-          }
-
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'PUT',
-            url: `${baseUrl}/flux-finance-lending/${updateId}`,
-            body: updateBody,
-            json: true,
-          });
-          break;
-
-        case 'delete':
-          const deleteId = this.getNodeParameter('id', i) as string;
-          result = await this.helpers.requestWithAuthentication.call(this, 'ondoFinanceApi', {
-            method: 'DELETE',
-            url: `${baseUrl}/flux-finance-lending/${deleteId}`,
-            json: true,
-          });
-          break;
-
-        default:
-          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
-      }
-
-      returnData.push({ json: result, pairedItem: { item: i } });
-    } catch (error) {
-      if (this.continueOnFail()) {
-        returnData.push({ 
-          json: { error: error.message }, 
-          pairedItem: { item: i } 
-        });
-      } else {
-        throw new NodeApiError(this.getNode(), error as JsonObject);
-      }
-    }
-  }
-
-  return returnData;
 }
